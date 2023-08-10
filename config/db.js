@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 mongoose.connect(process.env.MONGOD_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-}).then*(() => {
+}).then(() => {
     console.log("DB Connected");
-}).catch((err) => console.log(err));
+}).catch((err) => {
+    console.log(err)
+});
