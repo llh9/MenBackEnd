@@ -70,7 +70,7 @@
                     });
 
                     newUser.save().then(result => (
-                        res.json({
+                        res.status(200).json({
                             status: "SUCCESS", 
                             message: "Signup successful",
                             data: result,
@@ -128,7 +128,7 @@
                 bcrypt.compare(password, hashedPassword).then(result => {
                     if(result) {
                         //Password match
-                        res.json({
+                        res.status(200).json({
                             status: "Success",
                             message: "Signin Successful",
                             data: data
