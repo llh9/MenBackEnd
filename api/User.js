@@ -129,7 +129,7 @@
                     if(result) {
                         //Password match
                         res.status(200).json({
-                            status: "Success",
+                            status: "SUCCESS",
                             message: "Signin Successful",
                             data: data
                         })
