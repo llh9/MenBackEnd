@@ -12,5 +12,5 @@ const UserVerificationSchema = new Schema({
     expiresAt: Date,
 });
 
-const UserVerification = mongoose.model('User', UserVerificationSchema);
+const UserVerification = mongoose.model('UserVerification', UserVerificationSchema);
 module.exports = UserVerification;
