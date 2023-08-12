@@ -1,11 +1,40 @@
  const express = require('express');
+ const router = express.Router();
  //mongodb user model
  const User = require('./../models/User');
+
+ //mongodb user verification model
+ const UserVerification = require("./../models/UserVerification")
  
+ //email handler
+ const nodemailer = require('nodemailer');
+
+ //unique string
+ const {v4: uuidv4} = require("uuid");
+
+ // env variables 
+ require("dotenv").config();
+
  //password handler
  const bcrypt = require('bcrypt');
 
- const router = express.Router();
+let transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.AUTH_EMAIL,
+        pass: process.env.Auth_PASS,
+    }
+})
+
+//testing success
+transporter.verify((error,success) => {
+    if(error) {
+        console.log(error);
+    }else{
+        console.log("Ready for message");
+        console.log(success);
+    }
+})
 
  // Signup
  router.post('/signup', (req, res) => {
