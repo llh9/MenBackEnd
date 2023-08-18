@@ -7,7 +7,6 @@ const Schema = mongoose.Schema;
 const UserVerificationSchema = new Schema({
     userId: String,
     uniqueString: String,
-    password: String,
     createdAt: Date,
     expiresAt: Date,
 });

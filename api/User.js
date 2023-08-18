@@ -18,23 +18,25 @@
  //password handler
  const bcrypt = require('bcrypt');
 
-let transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-        user: process.env.AUTH_EMAIL,
-        pass: process.env.Auth_PASS,
-    }
-})
+//  let transporter = nodemailer.createTransport({
+//   host: "smtp.gmail.com",
+//   service: "gmail",
+//      auth: {
+//          type: "login",
+//          user: process.env.AUTH_EMAIL,
+//          pass: process.env.Auth_PASS,
+//      }
+//  })
 
-//testing success
-transporter.verify((error,success) => {
-    if(error) {
-        console.log(error);
-    }else{
-        console.log("Ready for message");
-        console.log(success);
-    }
-})
+//  //testing success
+//  transporter.verify((error,success) => {
+//      if(error) {
+//          console.log(error);
+//      }else{
+//          console.log("Ready for message");
+//          console.log(success);
+//      }
+//  })
 
  // Signup
  router.post('/signup', (req, res) => {
