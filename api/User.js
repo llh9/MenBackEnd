@@ -39,6 +39,29 @@
 //  })
 
  // Signup
+ 
+ // Import the functions you need from the SDKs you need
+ const { initializeApp } = require("firebase/app");
+ const { getAuth, createUserWithEmailAndPassword } = require("firebase/auth");
+ // TODO: Add SDKs for Firebase products that you want to use
+ // https://firebase.google.com/docs/web/setup#available-libraries
+ 
+ // Your web app's Firebase configuration
+ // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+ const firebaseConfig = {
+ apiKey: "AIzaSyDsm6Z7TPcbJpJBmC8sEOivbWFJQ14MM5Y",
+ authDomain: "nodemailerproject-396321.firebaseapp.com",
+ projectId: "nodemailerproject-396321",
+ storageBucket: "nodemailerproject-396321.appspot.com",
+ messagingSenderId: "452195930985",
+ appId: "1:452195930985:web:83ea8455e30d43ecafa3f8",
+ measurementId: "G-G4DKMLHXFY"
+ };
+
+ // Initialize Firebase
+ const app = initializeApp(firebaseConfig);
+ const auth = getAuth();
+  
  router.post('/signup', (req, res) => {
     //create variables for the request body and set them as the req body
     let {name, email, password, dateOfBirth} = req.body;
@@ -97,17 +120,19 @@
                         name,
                         email,
                         dateOfBirth,
-                        password: hashedPassword
+                        password: hashedPassword,
+                        verified: false
                     });
 
-                    newUser.save().then(result => (
-                        res.status(200).json({
-                            status: "SUCCESS", 
-                            message: "Signup successful",
-                            data: result,
-                        })
-                    ))
-                    .catch(err => {
+                    newUser.save().then(result => {
+                        //Handle account verification
+                        sendVerificationEmail(result, res);
+                        // res.status(200).json({
+                        //     status: "SUCCESS", 
+                        //     message: "Signup successful",
+                        //     data: result,
+                        // })
+                    }).catch(err => {
                         res.json({
                             status: "FAILED",
                             message: "An error occorred while saving the user!"
@@ -123,7 +148,11 @@
             })
         })
     }
- })
+ });
+
+ const sendVerificaitonEmail = ({_id, email}, res) => {
+    const currentUrl = "http:localhost:3005/"
+ };
 
  // Signin
  router.post('/signin', (req, res) => {
