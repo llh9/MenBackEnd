@@ -3,7 +3,7 @@ require('./config/db');
 const app = require('express')();
 var cors = require('cors')  //use this
 
-const port = process.env.PORT | 3005;
+const port = process.env.PORT;
 
 const UserRouter = require('./api/User');
  
