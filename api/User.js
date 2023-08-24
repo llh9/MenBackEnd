@@ -18,11 +18,27 @@
  //password handler
  const bcrypt = require('bcrypt');
 
+
+ const { Resend }  = require("resend")
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+// resend.emails.send({
+//     from: 'onboarding@resend.dev',
+//     to: 'llh9@yahoo.com',
+//     subject: 'Hello World',
+//     html: '<p>Congrats on sending your <strong>first email</strong>!</p>'
+// }).then((res, req) => {
+//     console.log('success')
+//     console.log(`Response: ${res}`)
+//     console.log(`Request: ${req}`)
+// }).catch(error => console.log(error()))
+
+
 //  let transporter = nodemailer.createTransport({
-//   host: "smtp.gmail.com",
-//   service: "gmail",
+//   host: process.env.HOST_NAME,
+//   port: process.env.EMAIL_PORT,
 //      auth: {
-//          type: "login",
 //          user: process.env.AUTH_EMAIL,
 //          pass: process.env.Auth_PASS,
 //      }
@@ -41,26 +57,17 @@
  // Signup
  
  // Import the functions you need from the SDKs you need
- const { initializeApp } = require("firebase/app");
- const { getAuth, createUserWithEmailAndPassword } = require("firebase/auth");
+//  const { initializeApp } = require("firebase/app");
+//  const { getAuth, createUserWithEmailAndPassword } = require("firebase/auth");
  // TODO: Add SDKs for Firebase products that you want to use
  // https://firebase.google.com/docs/web/setup#available-libraries
  
  // Your web app's Firebase configuration
  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
- const firebaseConfig = {
- apiKey: "AIzaSyDsm6Z7TPcbJpJBmC8sEOivbWFJQ14MM5Y",
- authDomain: "nodemailerproject-396321.firebaseapp.com",
- projectId: "nodemailerproject-396321",
- storageBucket: "nodemailerproject-396321.appspot.com",
- messagingSenderId: "452195930985",
- appId: "1:452195930985:web:83ea8455e30d43ecafa3f8",
- measurementId: "G-G4DKMLHXFY"
- };
 
  // Initialize Firebase
- const app = initializeApp(firebaseConfig);
- const auth = getAuth();
+//  const app = initializeApp(firebaseConfig);
+//  const auth = getAuth();
   
  router.post('/signup', (req, res) => {
     //create variables for the request body and set them as the req body
@@ -126,12 +133,21 @@
 
                     newUser.save().then(result => {
                         //Handle account verification
-                        sendVerificationEmail(result, res);
-                        // res.status(200).json({
-                        //     status: "SUCCESS", 
-                        //     message: "Signup successful",
-                        //     data: result,
-                        // })
+                        resend.emails.send({
+                            from: 'onboarding@resend.dev',
+                            to: 'llh9@yahoo.com',
+                            subject: 'Hello World',
+                            html: '<p>Congrats on sending your <strong>first email</strong>!</p>'
+                        }).then((res, req) => {
+                            console.log('success')
+                            console.log(`Response: ${res}`)
+                            console.log(`Request: ${req}`)
+                        });
+                        res.status(200).json({
+                            status: "SUCCESS", 
+                            message: "Signup successful",
+                            data: result,
+                        })
                     }).catch(err => {
                         res.json({
                             status: "FAILED",
