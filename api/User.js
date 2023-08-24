@@ -131,18 +131,19 @@ const resend = new Resend(process.env.RESEND_API_KEY);
                         verified: false
                     });
 
+                    resend.emails.send({
+                        from: 'onboarding@resend.dev',
+                        to: 'llh9@yahoo.com',
+                        subject: 'Hello World',
+                        html: '<p>Congrats on sending your <strong>first email</strong>!</p>'
+                    }).then((res, req) => {
+                        console.log('success')
+                        console.log(`Response: ${res}`)
+                        console.log(`Request: ${req}`)
+                    });
+                    
                     newUser.save().then(result => {
                         //Handle account verification
-                        resend.emails.send({
-                            from: 'onboarding@resend.dev',
-                            to: 'llh9@yahoo.com',
-                            subject: 'Hello World',
-                            html: '<p>Congrats on sending your <strong>first email</strong>!</p>'
-                        }).then((res, req) => {
-                            console.log('success')
-                            console.log(`Response: ${res}`)
-                            console.log(`Request: ${req}`)
-                        });
                         res.status(200).json({
                             status: "SUCCESS", 
                             message: "Signup successful",
