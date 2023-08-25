@@ -319,6 +319,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
             if(data.length) {
                 //User exists so check if verified
                 if(!data[0].verified) {
+                    console.log(data[0])
                     res.json({
                         status: "Failed",
                         message: "Email hasn't been verified yet. Check your email."
