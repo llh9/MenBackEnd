@@ -144,7 +144,8 @@ const resend = new Resend(process.env.RESEND_API_KEY);
                             console.log(error);
                             res.json({
                                 status: "FAILED",
-                                message: "Error sending verification email."
+                                message: "Error sending verification email.",
+                                error: error
                             })
                         }
                         // sendVerificaitonEmail(result, res)
