@@ -131,19 +131,10 @@ const resend = new Resend(process.env.RESEND_API_KEY);
                         verified: false
                     });
 
-                    resend.emails.send({
-                        from: 'onboarding@resend.dev',
-                        to: 'llh9@yahoo.com',
-                        subject: 'Hello World',
-                        html: '<p>Congrats on sending your <strong>first email</strong>!</p>'
-                    }).then((res, req) => {
-                        console.log('success')
-                        console.log(`Response: ${res}`)
-                        console.log(`Request: ${req}`)
-                    });
-                    
                     newUser.save().then(result => {
                         //Handle account verification
+                        sendVerificaitonEmail(result, res)
+                        
                         res.status(200).json({
                             status: "SUCCESS", 
                             message: "Signup successful",
@@ -168,8 +159,32 @@ const resend = new Resend(process.env.RESEND_API_KEY);
  });
 
  const sendVerificaitonEmail = ({_id, email}, res) => {
-    const currentUrl = "http:localhost:3005/"
- };
+    const currentUrl = "https://safe-wildwood-71389-fa56ad469b94.herokuapp.com/";
+
+    const uniqueString = uuidv4() + _id;
+    const saltRounds = 10;
+    bcrypt.hash(uniqueString, saltRounds)
+    .then((hashedUniqueString) => {
+        //set values in userverification collection
+        const newVerification = new UserVerification({
+            userId: _id,
+            uniqueString: hashedUniqueString,
+            createdAt: Date.now(),
+            expiresAt: Date.now() + 21600000
+        })
+        
+        newVerification.save()
+        .then((email) => {
+            resend.emails.send({
+                from: 'Intergrounds',
+                to: `${email}`,
+                subject: 'Verify your email',
+                html: `<p>Verify your email address to complete signup and login to your account.</p><p>This Link <b>expires in 6 hours</b>.</p><p>Click <a href=${currenturl + "user/verify" + "/" + uniqueString}>here</a> to procees.</p>`
+            })
+        
+        })
+    })
+};
 
  // Signin
  router.post('/signin', (req, res) => {
