@@ -192,12 +192,14 @@ const resend = new Resend(process.env.RESEND_API_KEY);
         newVerification.save()
         .then((currentUrl, email) => {
             try{
-            resend.emails.send({
-                from: 'ntergrounds@gmail.com',
-                to: `llh9@yahoo.com`,
-                subject: 'Verify your email',
-                html: `<p>Verify your email address to complete signup and login to your account.</p><p>This Link <b>expires in 6 hours</b>.</p><p>Click <a href=${currentUrl + "user/verify" + "/" + uniqueString}>here</a> to procees.</p>`
-            })
+                resend.emails.send({
+                    from: 'ntergrounds@gmail.com',
+                    to: `llh9@yahoo.com`,
+                    subject: 'Verify your email',
+                    html: `<p>Verify your email address to complete signup and login to your account.</p><p>This Link <b>expires in 6 hours</b>.</p><p>Click <a href=${currentUrl + "user/verify" + "/" + uniqueString}>here</a> to procees.</p>`
+                })
+                console.log("sending now")
+
             }catch(error){
                 console.log(error);
                 res.json({
