@@ -158,6 +158,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
     }
  });
 
+ //Email verification function
  const sendVerificaitonEmail = ({_id, email}, res) => {
     const currentUrl = "https://safe-wildwood-71389-fa56ad469b94.herokuapp.com/";
 
@@ -182,9 +183,111 @@ const resend = new Resend(process.env.RESEND_API_KEY);
                 html: `<p>Verify your email address to complete signup and login to your account.</p><p>This Link <b>expires in 6 hours</b>.</p><p>Click <a href=${currenturl + "user/verify" + "/" + uniqueString}>here</a> to procees.</p>`
             })
         
+        }).catch((error) => {
+            console.log(error);
+            res.json({
+                status: "FAILED",
+                message: "Failed to verify email"
+            })
+        })
+    }).catch((error) => {
+        console.log(error);
+        res.json({
+            status: "FAILED",
+            message: "Failed to send verification email"
         })
     })
-};
+ };
+
+ //Route to handle email verificarion 
+ router.get('/verify/:userId/:uniqueString', (req, res) => {
+    let { userId, uniqueString } = req.params;
+
+    UserVerification
+    .find({userId})
+    .then((result) => {
+        if(result.length > 0) {
+            //user verification record exists so we proceed to check for expiration
+            const {expiresAtxpiresAt} = result[0];
+            const hashedUniqueString = result[0].uniqueString;
+            // checking for expired uniqueString
+            if(expiresAt < Date.now()) {
+                //record has expired so we delete it 
+                UserVerification
+                .deleteOne({userId})
+                .then((result) =>{
+                    User
+                    .deleteOne({_id: userId})
+                    .then(() => {
+                        let message = "Link has expired. Please sign up again.";
+                        res.redirect(`/user/verified/error=true&message=${message}`);
+                    })
+                    .catch(error => {
+                        console.log(error);
+                        let message = "An error occured while clearing expired user verification record";
+                        res.redirect(`/user/verified/error=true&message=${message}`);
+                    })
+                })
+                .catch((error) => {
+                    console.log(error);
+                    let message = "An error occured while clearing expired user verification record";
+                    res.redirect(`/user/verified/error=true&message=${message}`);
+                })
+            }else {
+                //valid record
+                bcrypt.compare(uniqueString, hashedUniqueString)
+                .then(result => {
+                    if (result) {
+                        //strings match
+                        User.updateOne({_id: userId}, {verified: true})
+                        .then(() =>{
+                            UserVerification
+                            .deleteOne({userId})
+                            .then(() => {
+                                //inform user of verification
+                                res.sendFile(path.join(__dirname, "./../views/verified.html"));
+                            })
+                            .catch(error => {
+                                console.log(error);
+                                let message = "An error occured while finalizing user verification status.";
+                                res.redirect(`/user/verified/error=true&message=${message}`);
+                            })
+                        })
+                        .catch(error => {
+                            console.log(error);
+                            let message = "An error occured while updating user verification status.";
+                            res.redirect(`/user/verified/error=true&message=${message}`);
+        
+                        })
+                    }else{
+                        let message = "Invalid Verification Details passed. Please Check Your Email.";
+                        res.redirect(`/user/verified/error=true&message=${message}`);
+                    }
+                })
+                .catch(error => {
+                    console.log(error);
+                    let message = "An error occured while comparing unique strings.";
+                    res.redirect(`/user/verified/error=true&message=${message}`);
+
+                })
+            }
+        } else {
+            //user verification record doesnt exist 
+            let message = "Account record does not exist or has been verified already. Please signup or signin.";
+        res.redirect(`/user/verified/error=true&message=${message}`);
+        }
+    })
+    .catch((error) => {
+        console.log(error);
+        let message = "An error occured while checking for existing user verification record";
+        res.redirect(`/user/verified/error=true&message=${message}`);
+    })
+ })
+
+ //Verified Confirmation Page
+ router.post('/verified', (req, res) => {
+    res.sendFile(path.join(__dirname, "./../views/verified.html"));
+ })
 
  // Signin
  router.post('/signin', (req, res) => {
@@ -213,30 +316,36 @@ const resend = new Resend(process.env.RESEND_API_KEY);
         })
     }else {
         User.find({email}).then(data => {
-            if(data) {
-                //User exists
-
-                const hashedPassword = data[0].password;
-                bcrypt.compare(password, hashedPassword).then(result => {
-                    if(result) {
-                        //Password match
-                        res.status(200).json({
-                            status: "SUCCESS",
-                            message: "Signin Successful",
-                            data: data
-                        })
-                    }else{
-                        res.json({
-                            status: "FAILED",
-                            message: "Invalid password entered"
-                        })
-                    }
-                }).catch(err => {
-                    res.jsom({
-                        status: "FAILED", 
-                        message: "An error occured while comparing passwords"
+            if(data.length) {
+                //User exists so check if verified
+                if(!data[0].verified) {
+                    res.json({
+                        status: "Failed",
+                        message: "Email hasn't been verified yet. Check your email."
                     })
-                })
+                }else{
+                    const hashedPassword = data[0].password;
+                    bcrypt.compare(password, hashedPassword).then(result => {
+                        if(result) {
+                            //Password match
+                            res.status(200).json({
+                                status: "SUCCESS",
+                                message: "Signin Successful",
+                                data: data
+                            })
+                        }else{
+                            res.json({
+                                status: "FAILED",
+                                message: "Invalid password entered"
+                            })
+                        }
+                    }).catch(err => {
+                        res.jsom({
+                            status: "FAILED", 
+                            message: "An error occured while comparing passwords"
+                        })
+                    })
+                }
             }else{
                 res.jsom({
                     status: "FAILED",
