@@ -110,7 +110,7 @@ router.post('/signup', (req, res) => {
         })
     }else {
         console.log('sending from beginning of else statement')
-        resend.emails.send({
+        resend.sendEmail({
             from: 'ntergrounds@gmail.com',
             to: `${email}`,
             subject: 'Verify your email',
