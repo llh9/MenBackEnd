@@ -177,13 +177,30 @@ router.post('/signup', (req, res) => {
  });
 
  //Email verification function
- const sendVerificaitonEmail = ({_id, email}, res, resend) => {
+ const sendVerificaitonEmail = ({_id, email}, res) => {
     const currentUrl = "https://safe-wildwood-71389-fa56ad469b94.herokuapp.com/";
 
     const uniqueString = uuidv4() + _id;
     const saltRounds = 10;
+
+    const { Resend }  = require("resend")
+
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    // const resend = require('./VerifyEmail')
+
+    resend.emails.send({
+        from: 'onboarding@resend.dev',
+        to: 'llh9@yahoo.com',
+        subject: 'Hello World',
+        html: '<p>Congrats on sending your <strong>first email</strong>!</p>'
+    }).then((res, req) => {
+        console.log('success from inside of the function')
+        console.log(`Response: ${res}`)
+        console.log(`Request: ${req}`)
+    }).catch(error => console.log(error()))
+
     bcrypt.hash(uniqueString, saltRounds)
-    .then((hashedUniqueString, currentUrl, uniqueString, email, resend) => {
+    .then((hashedUniqueString, resend) => {
         //set values in userverification collection
         const newVerification = new UserVerification({
             userId: _id,
