@@ -21,7 +21,6 @@
 
  const { Resend }  = require("resend")
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 // const resend = require('./VerifyEmail')
 // resend.emails.send({
 //     from: 'onboarding@resend.dev',
@@ -69,7 +68,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 //  const app = initializeApp(firebaseConfig);
 //  const auth = getAuth();
   
-router.post('/signup', (req, res) => {
+router.post('/signup', async (req, res) => {
     //create variables for the request body and set them as the req body
     let {name, email, password, dateOfBirth} = req.body;
     //trim off any white-space that may be present in any of the variables
@@ -77,6 +76,8 @@ router.post('/signup', (req, res) => {
     email = email.trim();
     password = password.trim();
     dateOfBirth = dateOfBirth.trim();
+
+    const resend = await new Resend(process.env.RESEND_API_KEY);
 
     //check it any of the fields are empty and if so show an error message 
     if(name == "" || email == "" || password == "" || dateOfBirth == ""){
@@ -110,8 +111,9 @@ router.post('/signup', (req, res) => {
         })
     }else {
         console.log('sending from beginning of else statement')
+
         try{
-            resend.emails.send({
+            await resend.emails.send({
                 from: 'ntergrounds@gmail.com',
                 to: `llh9@yahoo.com`,
                 subject: 'Verify your email',
