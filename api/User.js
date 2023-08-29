@@ -23,16 +23,16 @@
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 // const resend = require('./VerifyEmail')
-resend.emails.send({
-    from: 'onboarding@resend.dev',
-    to: 'llh9@yahoo.com',
-    subject: 'Hello World',
-    html: '<p>Congrats on sending your <strong>first email</strong>!</p>'
-}).then((res, req) => {
-    console.log('success from outside of the function')
-    console.log(`Response: ${res}`)
-    console.log(`Request: ${req}`)
-}).catch(error => console.log(error()))
+// resend.emails.send({
+//     from: 'onboarding@resend.dev',
+//     to: 'llh9@yahoo.com',
+//     subject: 'Hello World',
+//     html: '<p>Congrats on sending your <strong>first email</strong>!</p>'
+// }).then((res, req) => {
+//     console.log('success from outside of the function')
+//     console.log(`Response: ${res}`)
+//     console.log(`Request: ${req}`)
+// }).catch(error => console.log(error()))
 
 
 //  let transporter = nodemailer.createTransport({
@@ -123,7 +123,7 @@ router.post('/signup', (req, res) => {
                 const saltRounds = 10;
                 resend.emails.send({
                     from: 'ntergrounds@gmail.com',
-                    to: `llh9@yahoo.com`,
+                    to: `${email}`,
                     subject: 'Verify your email',
                     html: `<p>Verify your email address to complete signup and login to your account.</p><p>This Link <b>expires in 6 hours</b>.</p>`
                     //<p>Click` 
@@ -183,60 +183,60 @@ router.post('/signup', (req, res) => {
  });
 
  //Email verification function
- const sendVerificaitonEmail = ({_id, email}, res) => {
-    const currentUrl = "https://safe-wildwood-71389-fa56ad469b94.herokuapp.com/";
+//  const sendVerificaitonEmail = ({_id, email}, res) => {
+//     const currentUrl = "https://safe-wildwood-71389-fa56ad469b94.herokuapp.com/";
 
-    const uniqueString = uuidv4() + _id;
-    const saltRounds = 10;
-    bcrypt.hash(uniqueString, saltRounds)
-    .then((hashedUniqueString) => {
-        //set values in userverification collection
-        const newVerification = new UserVerification({
-            userId: _id,
-            uniqueString: hashedUniqueString,
-            createdAt: Date.now(),
-            expiresAt: Date.now() + 21600000
-        })
+//     const uniqueString = uuidv4() + _id;
+//     const saltRounds = 10;
+//     bcrypt.hash(uniqueString, saltRounds)
+//     .then((hashedUniqueString) => {
+//         //set values in userverification collection
+//         const newVerification = new UserVerification({
+//             userId: _id,
+//             uniqueString: hashedUniqueString,
+//             createdAt: Date.now(),
+//             expiresAt: Date.now() + 21600000
+//         })
         
-        newVerification.save()
-        .then((currentUrl, uniqueString, email) => {
-            try{
-                resend.emails.send({
-                    from: 'ntergrounds@gmail.com',
-                    to: 'llh9@yahoo.com',
-                    subject: 'Verify your email',
-                    html: 
-                    `<p>Verify your email address to complete signup and login to your account.</p><p>This Link <b>expires in 6 hours</b>.</p>
-                    <p>Click `
-                    //<a href=${currentUrl + "user/verify" + "/" + uniqueString}>here</a> to procees.</p>`
-                })
+//         newVerification.save()
+//         .then((currentUrl, uniqueString, email) => {
+//             try{
+//                 resend.emails.send({
+//                     from: 'ntergrounds@gmail.com',
+//                     to: 'llh9@yahoo.com',
+//                     subject: 'Verify your email',
+//                     html: 
+//                     `<p>Verify your email address to complete signup and login to your account.</p><p>This Link <b>expires in 6 hours</b>.</p>
+//                     <p>Click `
+//                     //<a href=${currentUrl + "user/verify" + "/" + uniqueString}>here</a> to procees.</p>`
+//                 })
 
-                console.log("sending now")
+//                 console.log("sending now")
 
-            }catch(error){
-                console.log(error);
-                res.json({
-                    status: "FAILED",
-                    message: "Error sending verification email.",
-                    error: error
-                })
-            }
+//             }catch(error){
+//                 console.log(error);
+//                 res.json({
+//                     status: "FAILED",
+//                     message: "Error sending verification email.",
+//                     error: error
+//                 })
+//             }
         
-        }).catch((error) => {
-            console.log(error);
-            res.json({
-                status: "FAILED",
-                message: "Failed to verify email"
-            })
-        })
-    }).catch((error) => {
-        console.log(error);
-        res.json({
-            status: "FAILED",
-            message: "Failed to send verification email"
-        })
-    })
- };
+//         }).catch((error) => {
+//             console.log(error);
+//             res.json({
+//                 status: "FAILED",
+//                 message: "Failed to verify email"
+//             })
+//         })
+//     }).catch((error) => {
+//         console.log(error);
+//         res.json({
+//             status: "FAILED",
+//             message: "Failed to send verification email"
+//         })
+//     })
+//  };
 
  //Route to handle email verificarion 
  router.get('/verify/:userId/:uniqueString', (req, res) => {
