@@ -177,7 +177,7 @@ router.post('/signup', (req, res) => {
  });
 
  //Email verification function
- const sendVerificaitonEmail = ({_id, email}, res, email, resend) => {
+ const sendVerificaitonEmail = ({_id, email}, res, resend) => {
     const currentUrl = "https://safe-wildwood-71389-fa56ad469b94.herokuapp.com/";
 
     const uniqueString = uuidv4() + _id;
