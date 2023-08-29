@@ -69,7 +69,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 //  const app = initializeApp(firebaseConfig);
 //  const auth = getAuth();
   
- router.post('/signup', (req, res) => {
+ router.post('/signup', (req, res, resend) => {
     //create variables for the request body and set them as the req body
     let {name, email, password, dateOfBirth} = req.body;
     //trim off any white-space that may be present in any of the variables
