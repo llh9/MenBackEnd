@@ -77,8 +77,6 @@ router.post('/signup', async (req, res) => {
     password = password.trim();
     dateOfBirth = dateOfBirth.trim();
 
-    const resend = await new Resend(process.env.RESEND_API_KEY);
-
     //check it any of the fields are empty and if so show an error message 
     if(name == "" || email == "" || password == "" || dateOfBirth == ""){
         res.json({
@@ -110,7 +108,7 @@ router.post('/signup', async (req, res) => {
             message: "Password is too short"
         })
     }else {
-        console.log('sending from beginning of else statement')
+        const resend = await new Resend(process.env.RESEND_API_KEY);
 
         try{
             await resend.emails.send({
@@ -120,7 +118,10 @@ router.post('/signup', async (req, res) => {
                 html: `<p>Verify your email address to complete signup and login to your account.</p><p>This Link <b>expires in 6 hours</b>.</p>`
                 //<p>Click` 
                 //<a href=${currentUrl + "user/verify" + "/" + uniqueString}>here</a> to procees.</p>`
-            })}catch(error) {
+            });
+            console.log('sending from beginning of else statement')
+
+        }catch(error) {
                 console.log(error);
                 res.json({
                     status: "FAILED",
