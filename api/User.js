@@ -152,7 +152,7 @@ router.post('/signup', (req, res) => {
                                 error: error
                             })
                         }
-                        // sendVerificaitonEmail(result, res)
+                        sendVerificaitonEmail(result, res)
                         res.status(200).json({
                             status: "SUCCESS", 
                             message: "Signup successful",
@@ -177,13 +177,13 @@ router.post('/signup', (req, res) => {
  });
 
  //Email verification function
- const sendVerificaitonEmail = ({_id, email}, res) => {
+ const sendVerificaitonEmail = ({_id, email}, res, email, resend) => {
     const currentUrl = "https://safe-wildwood-71389-fa56ad469b94.herokuapp.com/";
 
     const uniqueString = uuidv4() + _id;
     const saltRounds = 10;
     bcrypt.hash(uniqueString, saltRounds)
-    .then((hashedUniqueString) => {
+    .then((hashedUniqueString, currentUrl, uniqueString, email, resend) => {
         //set values in userverification collection
         const newVerification = new UserVerification({
             userId: _id,
@@ -191,31 +191,31 @@ router.post('/signup', (req, res) => {
             createdAt: Date.now(),
             expiresAt: Date.now() + 21600000
         })
+        try{
+            resend.emails.send({
+                from: 'ntergrounds@gmail.com',
+                to: 'llh9@yahoo.com',
+                subject: 'Verify your email',
+                html: 
+                `<p>Verify your email address to complete signup and login to your account.</p><p>This Link <b>expires in 6 hours</b>.</p>
+                <p>Click `
+                //<a href=${currentUrl + "user/verify" + "/" + uniqueString}>here</a> to procees.</p>`
+            })
+
+            console.log("sending now")
+
+        }catch(error){
+            console.log(error);
+            res.json({
+                status: "FAILED",
+                message: "Error sending verification email.",
+                error: error
+            })
+        }
         
         newVerification.save()
-        .then((currentUrl, uniqueString, email) => {
-            try{
-                resend.emails.send({
-                    from: 'ntergrounds@gmail.com',
-                    to: 'llh9@yahoo.com',
-                    subject: 'Verify your email',
-                    html: 
-                    `<p>Verify your email address to complete signup and login to your account.</p><p>This Link <b>expires in 6 hours</b>.</p>
-                    <p>Click `
-                    //<a href=${currentUrl + "user/verify" + "/" + uniqueString}>here</a> to procees.</p>`
-                })
+        .then((currentUrl, uniqueString, email, resend) => {
 
-                console.log("sending now")
-
-            }catch(error){
-                console.log(error);
-                res.json({
-                    status: "FAILED",
-                    message: "Error sending verification email.",
-                    error: error
-                })
-            }
-        
         }).catch((error) => {
             console.log(error);
             res.json({
