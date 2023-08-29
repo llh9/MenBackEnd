@@ -21,8 +21,8 @@
 
  const { Resend }  = require("resend")
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
+// const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = require('./VerifyEmail')
 resend.emails.send({
     from: 'onboarding@resend.dev',
     to: 'llh9@yahoo.com',
