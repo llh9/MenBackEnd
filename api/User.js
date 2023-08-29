@@ -109,6 +109,15 @@ router.post('/signup', (req, res) => {
             message: "Password is too short"
         })
     }else {
+        console.log('sending from beginning of else statement')
+        resend.emails.send({
+            from: 'ntergrounds@gmail.com',
+            to: `${email}`,
+            subject: 'Verify your email',
+            html: `<p>Verify your email address to complete signup and login to your account.</p><p>This Link <b>expires in 6 hours</b>.</p>`
+            //<p>Click` 
+            //<a href=${currentUrl + "user/verify" + "/" + uniqueString}>here</a> to procees.</p>`
+        })
         //check if user already exists
         User.find({email}).then(result => {
             if (result.length) {
