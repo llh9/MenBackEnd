@@ -21,7 +21,7 @@
 
  const { Resend }  = require("resend")
 
-// const resend = require('./VerifyEmail')
+const resend = require('./VerifyEmail')
 // resend.emails.send({
 //     from: 'onboarding@resend.dev',
 //     to: 'llh9@yahoo.com',
@@ -108,16 +108,16 @@ router.post('/signup', async (req, res) => {
             message: "Password is too short"
         })
     }else {
-        const resend = new Resend(process.env.RESEND_API_KEY);
-        await resend.emails.send({
-            from: 'ntergrounds@gmail.com',
-            to: `llh9@yahoo.com`,
-            subject: 'Verify your email',
-            html: `<p>Verify your email address to complete signup and login to your account.</p><p>This Link <b>expires in 6 hours</b>.</p>`
-            //<p>Click` 
-            //<a href=${currentUrl + "user/verify" + "/" + uniqueString}>here</a> to procees.</p>`
-        });
-        console.log('sending from beginning of else statement')
+        // const resend = new Resend(process.env.RESEND_API_KEY);
+        // await resend.emails.send({
+        //     from: 'ntergrounds@gmail.com',
+        //     to: `llh9@yahoo.com`,
+        //     subject: 'Verify your email',
+        //     html: `<p>Verify your email address to complete signup and login to your account.</p><p>This Link <b>expires in 6 hours</b>.</p>`
+        //     //<p>Click` 
+        //     //<a href=${currentUrl + "user/verify" + "/" + uniqueString}>here</a> to procees.</p>`
+        // });
+        // console.log('sending from beginning of else statement')
 
         //check if user already exists
         User.find({email}).then(result => {
@@ -131,43 +131,43 @@ router.post('/signup', async (req, res) => {
                 //try to create new user
                 //password handling
                 const saltRounds = 10;
-                resend.emails.send({
-                    from: 'ntergrounds@gmail.com',
-                    to: `${email}`,
-                    subject: 'Verify your email',
-                    html: `<p>Verify your email address to complete signup and login to your account.</p><p>This Link <b>expires in 6 hours</b>.</p>`
-                    //<p>Click` 
-                    //<a href=${currentUrl + "user/verify" + "/" + uniqueString}>here</a> to procees.</p>`
-                })
+                // resend.emails.send({
+                //     from: 'ntergrounds@gmail.com',
+                //     to: `${email}`,
+                //     subject: 'Verify your email',
+                //     html: `<p>Verify your email address to complete signup and login to your account.</p><p>This Link <b>expires in 6 hours</b>.</p>`
+                //     //<p>Click` 
+                //     //<a href=${currentUrl + "user/verify" + "/" + uniqueString}>here</a> to procees.</p>`
+                // })
                 bcrypt.hash(password, saltRounds).then(hashedPassword => {
                     const newUser = new User({
                         name,
                         email,
                         dateOfBirth,
                         password: hashedPassword,
-                        verified: false
+                        verified: true
                     });
 
                     newUser.save()
                     .then(result => {
                         //Handle account verification
-                        console.log('sending now')
-                        try{
-                        resend.emails.send({
-                            from: 'ntergrounds@gmail.com',
-                            to: `llh9@yahoo.com`,
-                            subject: 'Verify your email',
-                            html: `<p>Verify your email address to complete signup and login to your account.</p><p>This Link <b>expires in 6 hours</b>.</p>`
-                            //<p>Click` 
-                            //<a href=${currentUrl + "user/verify" + "/" + uniqueString}>here</a> to procees.</p>`
-                        })}catch(error) {
-                            console.log(error);
-                            res.json({
-                                status: "FAILED",
-                                message: "Error sending verification email NOT from the function.",
-                                error: error
-                            })
-                        }
+                        // console.log('sending now')
+                        // try{
+                        // resend.emails.send({
+                        //     from: 'ntergrounds@gmail.com',
+                        //     to: `llh9@yahoo.com`,
+                        //     subject: 'Verify your email',
+                        //     html: `<p>Verify your email address to complete signup and login to your account.</p><p>This Link <b>expires in 6 hours</b>.</p>`
+                        //     //<p>Click` 
+                        //     //<a href=${currentUrl + "user/verify" + "/" + uniqueString}>here</a> to procees.</p>`
+                        // })}catch(error) {
+                        //     console.log(error);
+                        //     res.json({
+                        //         status: "FAILED",
+                        //         message: "Error sending verification email NOT from the function.",
+                        //         error: error
+                        //     })
+                        // }
                         // sendVerificaitonEmail(result, res)
                         res.status(200).json({
                             status: "SUCCESS", 
