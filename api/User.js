@@ -145,7 +145,7 @@ router.post('/signup', async (req, res) => {
                         email,
                         dateOfBirth,
                         password: hashedPassword,
-                        verified: true
+                        verified: false
                     });
 
                     newUser.save()
