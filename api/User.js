@@ -21,7 +21,7 @@
 
  const { Resend }  = require("resend")
 
-const resend = require('./VerifyEmail')
+// const resend = require('./VerifyEmail')
 // resend.emails.send({
 //     from: 'onboarding@resend.dev',
 //     to: 'llh9@yahoo.com',
